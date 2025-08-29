@@ -1,24 +1,17 @@
 {
-  "name": "gtts-api-n8n",
+  "name": "tts-api-n8n",
   "version": "1.0.0",
-  "description": "Free gTTS API service for n8n WhatsApp workflows",
+  "description": "Free TTS API service for n8n WhatsApp workflows",
   "main": "gtts-api.js",
   "scripts": {
     "start": "node gtts-api.js",
     "dev": "vercel dev"
-  },
-  "dependencies": {
-    "gtts": "^2.3.2"
-  },
-  "devDependencies": {
-    "vercel": "^32.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "keywords": [
     "tts",
-    "gtts",
     "n8n",
     "whatsapp",
     "api"
