@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "gtts-api.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/tts",
+      "dest": "/gtts-api.js"
+    }
+  ],
+  "functions": {
+    "gtts-api.js": {
+      "maxDuration": 30
+    }
+  }
+}
