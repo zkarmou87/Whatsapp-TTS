@@ -28,32 +28,26 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Text too long (max 5000 characters)' });
     }
 
-    // Use a more reliable free TTS service
-    const ttsUrl = `https://text-to-speech-api.vercel.app/api/tts`;
+    // Use a more reliable free TTS service - Google Translate TTS
+    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${voice}&client=tw-ob`;
     
-    // Make request to the TTS service
-    const ttsResponse = await fetch(ttsUrl, {
-      method: 'POST',
+    // Fetch the audio from Google Translate TTS
+    const response = await fetch(ttsUrl, {
       headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: text,
-        voice: voice,
-        format: format
-      })
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
     });
     
-    if (!ttsResponse.ok) {
-      throw new Error(`TTS service error: ${ttsResponse.status}`);
+    if (!response.ok) {
+      throw new Error(`TTS service error: ${response.status}`);
     }
 
     // Get the audio buffer
-    const audioBuffer = await ttsResponse.arrayBuffer();
+    const audioBuffer = await response.arrayBuffer();
     
     // Verify the audio file is not empty
-    if (audioBuffer.byteLength < 100) {
-      throw new Error('Generated audio file is too small (likely corrupted)');
+    if (audioBuffer.byteLength < 1000) {
+      throw new Error(`Generated audio file is too small: ${audioBuffer.byteLength} bytes (expected > 1000 bytes)`);
     }
     
     // Return audio file
