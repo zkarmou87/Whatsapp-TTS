@@ -28,18 +28,33 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Text too long (max 5000 characters)' });
     }
 
-    // Use a free TTS service that works on Vercel
-    const ttsUrl = `https://api.voicerss.org/?key=demo&hl=${voice}&src=${encodeURIComponent(text)}&c=MP3&f=44khz_16bit_stereo&r=0`;
+    // Use a more reliable free TTS service
+    const ttsUrl = `https://text-to-speech-api.vercel.app/api/tts`;
     
-    // Fetch the audio from the TTS service
-    const response = await fetch(ttsUrl);
+    // Make request to the TTS service
+    const ttsResponse = await fetch(ttsUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: text,
+        voice: voice,
+        format: format
+      })
+    });
     
-    if (!response.ok) {
-      throw new Error(`TTS service error: ${response.status}`);
+    if (!ttsResponse.ok) {
+      throw new Error(`TTS service error: ${ttsResponse.status}`);
     }
 
     // Get the audio buffer
-    const audioBuffer = await response.arrayBuffer();
+    const audioBuffer = await ttsResponse.arrayBuffer();
+    
+    // Verify the audio file is not empty
+    if (audioBuffer.byteLength < 100) {
+      throw new Error('Generated audio file is too small (likely corrupted)');
+    }
     
     // Return audio file
     res.setHeader('Content-Type', 'audio/mpeg');
